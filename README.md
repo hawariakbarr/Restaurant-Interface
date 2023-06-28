@@ -28,7 +28,7 @@ This repository contains a simple HTML interface that communicates with a restau
 1. Clone this repository or download the zip file.
    
    ```sh
-   git clone https://github.com/your-username/your-repository-name.git
+   git clone https://github.com/your-username/Restaurant-Interface.git
 
 2. Open index.html in your web browser.
    
