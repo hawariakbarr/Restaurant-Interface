@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Order Interface</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      form {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Add Menu</h2>
+    <form onsubmit="addMenu(event)">
+      <input type="text" id="menuName" placeholder="Name" />
+      <input type="text" id="menuDescription" placeholder="Description" />
+      <input type="number" id="menuPrice" placeholder="Price" />
+      <button type="submit">Add Menu</button>
+    </form>
+
+    <h2>Create Order</h2>
+    <form onsubmit="createOrder(event)">
+      <input
+        type="text"
+        id="menuItemIds"
+        placeholder="Menu Item IDs (e.g. 1,2,3)"
+      />
+      <button type="submit">Create Order</button>
+    </form>
+
+    <h2>Menu Items</h2>
+    <button onclick="fetchMenu()">Fetch Menu</button>
+    <ul id="menuList"></ul>
+
+    <h2>Orders</h2>
+    <button onclick="fetchOrders()">Fetch / Refresh Orders</button>
+    <ul id="ordersList"></ul>
+
+    <script>
+      async function addMenu(event) {
+        event.preventDefault();
+        const name = document.getElementById("menuName").value;
+        const description = document.getElementById("menuDescription").value;
+        const price = document.getElementById("menuPrice").value;
+
+        try {
+          await fetch("https://localhost:7183/api/Menu", {
+            method: "POST",
+            headers: {
+              accept: "text/plain",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name,
+              description: description,
+              price: Number(price),
+            }),
+          });
+          fetchMenu();
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      async function createOrder(event) {
+        event.preventDefault();
+        const menuItemIds = document
+          .getElementById("menuItemIds")
+          .value.split(",")
+          .map(Number);
+
+        try {
+          await fetch("https://localhost:7183/api/orders", {
+            method: "POST",
+            headers: {
+              accept: "text/plain",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              menuItemIds: menuItemIds,
+            }),
+          });
+          fetchOrders();
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      async function fetchMenu() {
+        try {
+          const response = await fetch("https://localhost:7183/api/Menu");
+          const responseData = await response.json();
+          const menuItems = responseData.data;
+          const menuList = document.getElementById("menuList");
+          menuList.innerHTML = "";
+          menuItems.forEach((item) => {
+            menuList.innerHTML += `<li>ID: ${item.id} - Name : ${item.name} - Description: ${item.description} - Price: ${item.price}</li>`;
+          });
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      async function fetchOrders() {
+        try {
+          const response = await fetch("https://localhost:7183/api/orders");
+          const responseData = await response.json();
+          const orders = responseData.data;
+          const ordersList = document.getElementById("ordersList");
+          ordersList.innerHTML = "";
+          orders.forEach((order) => {
+            ordersList.innerHTML += `<li>Order ID ${
+              order.orderID
+            } with menu items: ${order.menuItemIds.join(", ")} - Total Price: ${
+              order.totalPrice
+            } - Status: ${order.status}</li>`;
+          });
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      async function fetchOrders() {
+        try {
+          const response = await fetch("https://localhost:7183/api/orders");
+          const responseData = await response.json();
+          const orders = responseData.data;
+          const ordersList = document.getElementById("ordersList");
+          ordersList.innerHTML = "";
+          orders.forEach((order) => {
+            ordersList.innerHTML += `<li>Order ID ${
+              order.orderID
+            } with menu items: ${order.menuItemIds.join(", ")} - Total Price: ${
+              order.totalPrice
+            } - Status: ${order.status}</li>`;
+          });
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    </script>
+  </body>
+</html>
